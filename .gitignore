@@ -1,0 +1,10 @@
+/bin/
+/data/
+/secrets/
+.env
+*.db
+*.db-*
+*.lock
+coverage.out
+__pycache__/
+*.pyc

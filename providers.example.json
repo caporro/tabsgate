@@ -1,0 +1,46 @@
+[
+  {
+    "id": "openai",
+    "name": "OpenAI",
+    "base_url": "https://api.openai.com/v1",
+    "output_limit_field": "max_completion_tokens"
+  },
+  {
+    "id": "deepseek",
+    "name": "DeepSeek",
+    "base_url": "https://api.deepseek.com/v1",
+    "output_limit_field": "max_tokens"
+  },
+  {
+    "id": "openrouter",
+    "name": "OpenRouter",
+    "base_url": "https://openrouter.ai/api/v1",
+    "output_limit_field": "max_tokens"
+  },
+  {
+    "id": "groq",
+    "name": "Groq",
+    "base_url": "https://api.groq.com/openai/v1",
+    "output_limit_field": "max_completion_tokens"
+  },
+  {
+    "id": "mistral",
+    "name": "Mistral",
+    "base_url": "https://api.mistral.ai/v1",
+    "output_limit_field": "max_tokens",
+    "omit_stream_options": true
+  },
+  {
+    "id": "together",
+    "name": "Together AI",
+    "base_url": "https://api.together.ai/v1",
+    "output_limit_field": "max_tokens",
+    "omit_stream_options": true
+  },
+  {
+    "id": "xai",
+    "name": "xAI",
+    "base_url": "https://api.x.ai/v1",
+    "output_limit_field": "max_tokens"
+  }
+]

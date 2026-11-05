@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#080813">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="Create and manage AI virtual keys, limits and usage. No account needed.">
+  <title>TabsGate</title>
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/app.css">
+  <script type="module" src="assets/app.js"></script>
+</head>
+<body>
+  <div id="tabsgate">
+    <section class="tg-app" aria-label="TabsGate — virtual key management">
+      <header class="tg-header">
+        <div class="tg-brand"><img src="assets/logo.png" alt="TabsGate" width="1340" height="354"></div>
+        <div id="tg-connection"></div>
+      </header>
+      <div id="tg-error" class="tg-error" role="alert" tabindex="-1" hidden></div>
+      <main id="tg-content"><p class="tg-loading">Loading…</p></main>
+      <p id="tg-feedback" class="tg-feedback" role="status" aria-live="polite"></p>
+    </section>
+    <dialog id="tg-confirm-dialog" class="tg-dialog" aria-labelledby="tg-dialog-title" aria-describedby="tg-dialog-message">
+      <h2 id="tg-dialog-title"></h2>
+      <p id="tg-dialog-message"></p>
+      <div class="tg-dialog-actions">
+        <button id="tg-dialog-cancel" type="button" class="tg-button" autofocus>Cancel</button>
+        <button id="tg-dialog-accept" type="button" class="tg-button tg-primary">Confirm</button>
+      </div>
+    </dialog>
+    <noscript>Enable JavaScript to manage your virtual keys.</noscript>
+  </div>
+</body>
+</html>

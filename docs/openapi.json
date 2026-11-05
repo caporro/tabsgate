@@ -1,0 +1,1235 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Tabs Gate",
+    "version": "0.1.0",
+    "description": "Accountless virtual-key gateway. Management requires the original provider credential AND keyword. Usage endpoints require a virtual key. No browser cookies or login sessions."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Local development; use HTTPS for remote clients."
+    }
+  ],
+  "paths": {
+    "/healthz": {
+      "get": {
+        "summary": "Process liveness",
+        "operationId": "get_healthz",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error; see README for codes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/readyz": {
+      "get": {
+        "summary": "Database and accounting readiness",
+        "operationId": "get_readyz",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error; see README for codes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/providers": {
+      "get": {
+        "summary": "List operator-configured providers",
+        "operationId": "get_api_v1_providers",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error; see README for codes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/connections": {
+      "post": {
+        "summary": "Register or reopen a connection",
+        "operationId": "post_api_v1_connections",
+        "security": [],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Connection"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error; see README for codes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Existing connection authenticated with its original keyword.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Connection"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterConnection"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/connections/{id}": {
+      "get": {
+        "summary": "Read connection and aggregate usage",
+        "operationId": "get_api_v1_connections_id",
+        "security": [
+          {
+            "ProviderKey": [],
+            "ManagementKeyword": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Connection"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error; see README for codes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "patch": {
+        "summary": "Rotate upstream key or management keyword",
+        "operationId": "patch_api_v1_connections_id",
+        "security": [
+          {
+            "ProviderKey": [],
+            "ManagementKeyword": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Connection"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error; see README for codes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchConnection"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete connection and all related credentials and metadata",
+        "operationId": "delete_api_v1_connections_id",
+        "security": [
+          {
+            "ProviderKey": [],
+            "ManagementKeyword": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Error; see README for codes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/connections/{id}/models": {
+      "get": {
+        "summary": "Discover provider models",
+        "operationId": "get_api_v1_connections_id_models",
+        "security": [
+          {
+            "ProviderKey": [],
+            "ManagementKeyword": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelList"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error; see README for codes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/connections/{id}/keys": {
+      "get": {
+        "summary": "List virtual keys including revoked keys",
+        "operationId": "get_api_v1_connections_id_keys",
+        "security": [
+          {
+            "ProviderKey": [],
+            "ManagementKeyword": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/VirtualKey"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error; see README for codes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "Issue a virtual key",
+        "operationId": "post_api_v1_connections_id_keys",
+        "security": [
+          {
+            "ProviderKey": [],
+            "ManagementKeyword": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssuedKey"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error; see README for codes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateKey"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/connections/{id}/keys/{keyId}": {
+      "patch": {
+        "summary": "Change limits without resetting usage",
+        "operationId": "patch_api_v1_connections_id_keys_keyId",
+        "security": [
+          {
+            "ProviderKey": [],
+            "ManagementKeyword": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VirtualKey"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error; see README for codes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "keyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchKey"
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Permanently revoke a virtual key and retain its counters",
+        "operationId": "delete_api_v1_connections_id_keys_keyId",
+        "security": [
+          {
+            "ProviderKey": [],
+            "ManagementKeyword": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success"
+          },
+          "default": {
+            "description": "Error; see README for codes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "keyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/key": {
+      "get": {
+        "summary": "Read own status even when expired or revoked",
+        "operationId": "get_api_v1_key",
+        "security": [
+          {
+            "VirtualKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VirtualKey"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error; see README for codes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/models": {
+      "get": {
+        "summary": "List models allowed for this active virtual key",
+        "operationId": "get_v1_models",
+        "security": [
+          {
+            "VirtualKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelList"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error; see README for codes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/chat/completions": {
+      "post": {
+        "summary": "Generate a text chat completion",
+        "operationId": "post_v1_chat_completions",
+        "security": [
+          {
+            "VirtualKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Provider Chat Completion response."
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Provider SSE events; usage is settled before [DONE]. Errors after response start are SSE error objects."
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error; see README for codes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": "Each admitted attempt counts. One active generation per key. Soft token threshold; the last response may exceed it. Unknown final usage is charged conservatively. No automatic upstream retries.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ProviderKey": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Original provider key; never share with virtual-key recipients."
+      },
+      "ManagementKeyword": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-TabsGate-Keyword"
+      },
+      "VirtualKey": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "tg_..."
+      }
+    },
+    "schemas": {
+      "RegisterConnection": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "provider": {
+            "type": "string"
+          },
+          "api_key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "keyword": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "provider",
+          "api_key",
+          "keyword"
+        ]
+      },
+      "PatchConnection": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "api_key": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "keyword": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          }
+        },
+        "minProperties": 1
+      },
+      "Connection": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "revision": {
+            "type": "integer"
+          },
+          "key_count": {
+            "type": "integer"
+          },
+          "requests_used": {
+            "type": "integer"
+          },
+          "tokens_used": {
+            "type": "integer"
+          }
+        }
+      },
+      "CreateKey": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "max_requests": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "token_budget": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000000000
+          },
+          "ttl_seconds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 31536000,
+            "description": "Relative to this create or patch operation."
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Future UTC timestamp, at most 365 days away. Mutually exclusive with ttl_seconds."
+          },
+          "allowed_models": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "minItems": 1,
+            "maxItems": 100,
+            "uniqueItems": true
+          },
+          "max_output_tokens": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 16384,
+            "default": 4096
+          }
+        },
+        "required": [
+          "max_requests",
+          "token_budget",
+          "allowed_models"
+        ],
+        "oneOf": [
+          {
+            "required": [
+              "ttl_seconds"
+            ],
+            "not": {
+              "required": [
+                "expires_at"
+              ]
+            }
+          },
+          {
+            "required": [
+              "expires_at"
+            ],
+            "not": {
+              "required": [
+                "ttl_seconds"
+              ]
+            }
+          }
+        ]
+      },
+      "PatchKey": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "max_requests": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "token_budget": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000000000
+          },
+          "ttl_seconds": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 31536000,
+            "description": "Relative to this create or patch operation."
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Future UTC timestamp, at most 365 days away. Mutually exclusive with ttl_seconds."
+          },
+          "allowed_models": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "minItems": 1,
+            "maxItems": 100,
+            "uniqueItems": true
+          },
+          "max_output_tokens": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 16384,
+            "default": 4096
+          }
+        },
+        "not": {
+          "required": [
+            "ttl_seconds",
+            "expires_at"
+          ]
+        }
+      },
+      "VirtualKey": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "max_requests": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "token_budget": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000000000
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Future UTC timestamp, at most 365 days away. Mutually exclusive with ttl_seconds."
+          },
+          "allowed_models": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "minItems": 1,
+            "maxItems": 100,
+            "uniqueItems": true
+          },
+          "max_output_tokens": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 16384,
+            "default": 4096
+          },
+          "id": {
+            "type": "string"
+          },
+          "prefix": {
+            "type": "string"
+          },
+          "requests_used": {
+            "type": "integer"
+          },
+          "tokens_used": {
+            "type": "integer"
+          },
+          "requests_remaining": {
+            "type": "integer"
+          },
+          "tokens_remaining": {
+            "type": "integer"
+          },
+          "estimated_requests": {
+            "type": "integer"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "active",
+              "key_expired",
+              "key_revoked",
+              "request_limit_reached",
+              "token_budget_exhausted"
+            ]
+          },
+          "in_flight": {
+            "type": "boolean"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "revision": {
+            "type": "integer"
+          }
+        }
+      },
+      "IssuedKey": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "max_requests": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "token_budget": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000000000
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Future UTC timestamp, at most 365 days away. Mutually exclusive with ttl_seconds."
+          },
+          "allowed_models": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "minItems": 1,
+            "maxItems": 100,
+            "uniqueItems": true
+          },
+          "max_output_tokens": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 16384,
+            "default": 4096
+          },
+          "id": {
+            "type": "string"
+          },
+          "prefix": {
+            "type": "string"
+          },
+          "requests_used": {
+            "type": "integer"
+          },
+          "tokens_used": {
+            "type": "integer"
+          },
+          "requests_remaining": {
+            "type": "integer"
+          },
+          "tokens_remaining": {
+            "type": "integer"
+          },
+          "estimated_requests": {
+            "type": "integer"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "active",
+              "key_expired",
+              "key_revoked",
+              "request_limit_reached",
+              "token_budget_exhausted"
+            ]
+          },
+          "in_flight": {
+            "type": "boolean"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "revision": {
+            "type": "integer"
+          },
+          "key": {
+            "type": "string",
+            "description": "Returned once, only on successful creation."
+          }
+        }
+      },
+      "ModelList": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "object": {
+            "type": "string",
+            "enum": [
+              "list"
+            ]
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "object": {
+                  "type": "string",
+                  "enum": [
+                    "model"
+                  ]
+                },
+                "owned_by": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "error": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "tabsgate_error"
+                ]
+              },
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "type",
+              "code",
+              "message"
+            ]
+          }
+        },
+        "required": [
+          "error"
+        ]
+      },
+      "ChatRequest": {
+        "type": "object",
+        "required": [
+          "model",
+          "messages"
+        ],
+        "description": "OpenAI-compatible text chat only. The gateway enforces n=1, model allowlist, output cap and stream usage reporting. Optional generation parameters are validated further by the selected provider.",
+        "properties": {
+          "model": {
+            "type": "string"
+          },
+          "messages": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 1000,
+            "items": {
+              "type": "object"
+            }
+          },
+          "stream": {
+            "type": "boolean",
+            "default": false
+          },
+          "max_tokens": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "max_completion_tokens": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "tools": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "temperature": {
+            "type": "number"
+          },
+          "top_p": {
+            "type": "number"
+          },
+          "top_k": {
+            "type": "number"
+          },
+          "min_p": {
+            "type": "number"
+          },
+          "frequency_penalty": {
+            "type": "number"
+          },
+          "presence_penalty": {
+            "type": "number"
+          },
+          "top_logprobs": {
+            "type": "number"
+          },
+          "seed": {
+            "type": "number"
+          },
+          "parallel_tool_calls": {
+            "type": "boolean"
+          },
+          "logprobs": {
+            "type": "boolean"
+          },
+          "include_reasoning": {
+            "type": "boolean"
+          },
+          "store": {
+            "type": "boolean"
+          },
+          "reasoning_effort": {
+            "type": "string"
+          },
+          "verbosity": {
+            "type": "string"
+          },
+          "user": {
+            "type": "string"
+          },
+          "response_format": {
+            "type": "object"
+          },
+          "logit_bias": {
+            "type": "object"
+          },
+          "reasoning": {
+            "type": "object"
+          },
+          "stream_options": {
+            "type": "object"
+          },
+          "stop": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "tool_choice": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "object"
+              }
+            ]
+          },
+          "n": {
+            "type": "integer",
+            "const": 1
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

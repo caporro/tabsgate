@@ -1,0 +1,31 @@
+services:
+  tabsgate:
+    build: .
+    image: tabsgate:local
+    ports:
+      - "127.0.0.1:${TABSGATE_PORT:-8080}:8080"
+    environment:
+      TABSGATE_MASTER_KEY_FILE: /run/secrets/master_key
+      TABSGATE_CORS_ORIGINS: ${TABSGATE_CORS_ORIGINS:-*}
+      TABSGATE_TRUSTED_PROXIES: ${TABSGATE_TRUSTED_PROXIES:-}
+    secrets:
+      - master_key
+    volumes:
+      - gate_data:/data
+    read_only: true
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    init: true
+    restart: unless-stopped
+    stop_grace_period: 130s
+    mem_limit: 512m
+    cpus: 2
+    pids_limit: 128
+
+secrets:
+  master_key:
+    file: ./secrets/master_key
+
+volumes:
+  gate_data:

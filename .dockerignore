@@ -1,0 +1,11 @@
+.git
+.env
+secrets
+data
+bin
+*.db
+*.db-*
+*.lock
+coverage.out
+**/__pycache__
+**/*.pyc
